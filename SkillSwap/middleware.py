@@ -1,7 +1,12 @@
 import logging
+import sys
 
 
-logger = logging.getLogger("django.request")
+logger = logging.getLogger("skillswap.exceptions")
+logger.setLevel(logging.ERROR)
+if not any(isinstance(handler, logging.StreamHandler) for handler in logger.handlers):
+    logger.addHandler(logging.StreamHandler(sys.stderr))
+logger.propagate = False
 
 
 class ExceptionLoggingMiddleware:
