@@ -88,7 +88,7 @@ ROOT_URLCONF = 'SkillSwap.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'skills' / 'Templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
