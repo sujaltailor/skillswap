@@ -58,3 +58,13 @@ Run the Django test suite with:
 ```powershell
 python manage.py test
 ```
+
+## Deploy to Render
+
+1. Create a new Blueprint in Render and connect this GitHub repository.
+2. Render reads `render.yaml` to create the web service and PostgreSQL database.
+3. Wait for the first deploy to finish, then open the service URL.
+
+The included Blueprint uses Render's free web and PostgreSQL plans for a demo.
+The free PostgreSQL database expires after 30 days, so upgrade it before storing
+data you need to keep. The generated `DJANGO_SECRET_KEY` is configured by Render.
