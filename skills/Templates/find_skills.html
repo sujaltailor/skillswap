@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Find Skills - SkillSwap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 6%;
+            border-bottom: 1px solid #DDE5DC;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: #2E7D32;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #395443;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .logout,
+        button {
+            background: #2E7D32;
+            color: white !important;
+            padding: 10px 17px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 1000px;
+            margin: 45px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border: 1px solid #DDE5DC;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #1B4332;
+        }
+
+        .subtitle {
+            color: #6B7280;
+        }
+
+        input {
+            width: 82%;
+            padding: 14px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+        }
+
+        .student {
+            border: 1px solid #DDE5DC;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .request {
+            display: inline-block;
+            background: #2E7D32;
+            color: white;
+            text-decoration: none;
+            padding: 9px 15px;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <a href="{% url 'dashboard' %}" class="logo">
+            SkillSwap
+        </a>
+
+        <div>
+
+            <a href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'find_skills' %}">
+                Find Skills
+            </a>
+
+            <a href="{% url 'requests' %}">
+                Requests
+            </a>
+
+            <a href="{% url 'logout' %}" class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <div class="card">
+
+            <h1>Find Students</h1>
+
+            <p class="subtitle">
+                Search students by the skill they can teach.
+            </p>
+
+            <form method="GET">
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search Python, Django, CSS..."
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </form>
+
+        </div>
+
+
+        {% if query %}
+
+            <div class="card">
+
+                <h2>
+                    Students who can teach "{{ query }}"
+                </h2>
+
+
+                {% for student in profiles %}
+
+                    <div class="student">
+
+                        <h3>
+                            {{ student.user.first_name }}
+                            {{ student.user.last_name }}
+                        </h3>
+
+                        <p>
+                            {{ student.bio }}
+                        </p>
+
+                        <a
+                            href="{% url 'send_request' student.id %}"
+                            class="request"
+                        >
+                            Send Request
+                        </a>
+
+                    </div>
+
+                {% empty %}
+
+                    <p>
+                        No students found.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+</body>
+
+</html>

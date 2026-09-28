@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Requests - SkillSwap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 6%;
+            border-bottom: 1px solid #DDE5DC;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: #2E7D32;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #395443;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .logout {
+            background: #2E7D32;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 8px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 900px;
+            margin: 45px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border: 1px solid #DDE5DC;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        h1,
+        h2 {
+            color: #1B4332;
+        }
+
+        .request {
+            border: 1px solid #DDE5DC;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .accept,
+        .reject {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 7px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .accept {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .reject {
+            background: #FEE2E2;
+            color: #B91C1C;
+            margin-left: 8px;
+        }
+
+        .message {
+            color: #6B7280;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <a href="{% url 'dashboard' %}" class="logo">
+            SkillSwap
+        </a>
+
+        <div>
+
+            <a href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'find_skills' %}">
+                Find Skills
+            </a>
+
+            <a href="{% url 'requests' %}" class="logout">
+                Requests
+            </a>
+
+            <a href="{% url 'logout' %}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <h1>Exchange Requests</h1>
+
+
+        <!-- Received -->
+
+        <div class="card">
+
+            <h2>
+                Received Requests
+            </h2>
+
+
+            {% for req in received_requests %}
+
+                <div class="request">
+
+                    <h3>
+                        {{ req.sender.user.username }}
+                    </h3>
+
+                    <p class="message">
+                        {{ req.message }}
+                    </p>
+
+                    <span class="status">
+                        {{ req.status }}
+                    </span>
+
+
+                    {% if req.status == "Pending" %}
+
+                        <br>
+
+                        <a
+                            href="{% url 'accept_request' req.id %}"
+                            class="accept"
+                        >
+                            Accept
+                        </a>
+
+                        <a
+                            href="{% url 'reject_request' req.id %}"
+                            class="reject"
+                        >
+                            Reject
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            {% empty %}
+
+                <p>
+                    No received requests.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Sent -->
+
+        <div class="card">
+
+            <h2>
+                Sent Requests
+            </h2>
+
+
+            {% for req in sent_requests %}
+
+                <div class="request">
+
+                    <h3>
+                        To: {{ req.receiver.user.username }}
+                    </h3>
+
+                    <p class="message">
+                        {{ req.message }}
+                    </p>
+
+                    <span class="status">
+                        {{ req.status }}
+                    </span>
+
+                </div>
+
+            {% empty %}
+
+                <p>
+                    No sent requests.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

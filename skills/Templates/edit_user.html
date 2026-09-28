@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit User - SkillSwap</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #F5F7F2;
+            color: #1B4332;
+        }
+
+        .navbar {
+            background: #1B4332;
+            padding: 18px 40px;
+            color: white;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2E7D32;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #b00020;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .cancel {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        button {
+            background: #2E7D32;
+            color: white;
+        }
+
+        button:hover {
+            background: #256628;
+        }
+
+        .cancel {
+            background: #E8F5E9;
+            color: #1B4332;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>SkillSwap Admin</h2>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>Edit User</h1>
+
+            {% if error %}
+                <div class="error">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Username</label>
+
+                    <input
+                        type="text"
+                        name="username"
+                        value="{{ user.username }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>First Name</label>
+
+                    <input
+                        type="text"
+                        name="first_name"
+                        value="{{ user.first_name }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+
+                    <input
+                        type="text"
+                        name="last_name"
+                        value="{{ user.last_name }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>New Password</label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Leave blank to keep old password"
+                    >
+                </div>
+
+                <div class="buttons">
+
+                    <button type="submit">
+                        Update User
+                    </button>
+
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="cancel"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

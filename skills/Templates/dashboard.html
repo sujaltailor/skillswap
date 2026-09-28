@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - SkillSwap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 6%;
+            border-bottom: 1px solid #DDE5DC;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #2E7D32;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #395443;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .logout {
+            background: #2E7D32;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 8px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 1100px;
+            margin: 45px auto;
+        }
+
+        h1 {
+            color: #1B4332;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6B7280;
+            margin-bottom: 30px;
+        }
+
+        .edit {
+            display: inline-block;
+            background: #2E7D32;
+            color: white;
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #DDE5DC;
+        }
+
+        .card h3 {
+            color: #52705B;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2E7D32;
+            margin-top: 20px;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        input {
+            width: 82%;
+            padding: 14px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #2E7D32;
+            color: white;
+            cursor: pointer;
+        }
+
+        .skill {
+            display: inline-block;
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 8px 14px;
+            border-radius: 20px;
+            margin: 4px;
+        }
+
+        .student {
+            margin-top: 15px;
+            border: 1px solid #DDE5DC;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .request {
+            display: inline-block;
+            background: #2E7D32;
+            color: white;
+            text-decoration: none;
+            padding: 9px 15px;
+            border-radius: 7px;
+        }
+
+        @media(max-width:700px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            input {
+                width: 70%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <a href="{% url 'dashboard' %}" class="logo">
+            SkillSwap
+        </a>
+
+        <div>
+
+            <a href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'find_skills' %}">
+                Find Skills
+            </a>
+
+            <a href="{% url 'requests' %}">
+                Requests
+            </a>
+
+            <a href="{% url 'logout' %}" class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <h1>
+            Welcome, {{ request.user.username }}!
+        </h1>
+
+        <p class="subtitle">
+            Manage your skills and connect with other students.
+        </p>
+
+
+        <a href="{% url 'home' %}" class="edit">
+            + Add / Edit Skills
+        </a>
+
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Skills I Teach</h3>
+
+                <div class="number">
+                    {{ profile.skills_to_teach.count }}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h3>Skills I Want to Learn</h3>
+
+                <div class="number">
+                    {{ profile.skills_to_learn.count }}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h3>My Profile</h3>
+
+                <div class="number">
+                    ✓
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card section">
+
+            <h2>
+                Find Students by Skill
+            </h2>
+
+            <form method="GET">
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search Python, Django, CSS..."
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="card section">
+
+            <h2>My Skills</h2>
+
+            <h3>Skills I Can Teach</h3>
+
+            {% for skill in profile.skills_to_teach.all %}
+
+                <span class="skill">
+                    {{ skill.name }}
+                </span>
+
+            {% empty %}
+
+                <p>No teaching skills added.</p>
+
+            {% endfor %}
+
+
+            <h3>Skills I Want to Learn</h3>
+
+            {% for skill in profile.skills_to_learn.all %}
+
+                <span class="skill">
+                    {{ skill.name }}
+                </span>
+
+            {% empty %}
+
+                <p>No learning skills added.</p>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if query %}
+
+            <div class="card section">
+
+                <h2>
+                    Students who can teach "{{ query }}"
+                </h2>
+
+
+                {% for student in profiles %}
+
+                    <div class="student">
+
+                        <h3>
+                            {{ student.user.first_name }}
+                            {{ student.user.last_name }}
+                        </h3>
+
+                        <p>
+                            {{ student.bio }}
+                        </p>
+
+                        <a
+                            href="{% url 'send_request' student.id %}"
+                            class="request"
+                        >
+                            Send Request
+                        </a>
+
+                    </div>
+
+                {% empty %}
+
+                    <p>
+                        No students found for this skill.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+</body>
+
+</html>

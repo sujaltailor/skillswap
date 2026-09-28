@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Send Request - SkillSwap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 6%;
+            border-bottom: 1px solid #DDE5DC;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: #2E7D32;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #395443;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .logout {
+            background: #2E7D32;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 8px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 600px;
+            margin: 60px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border: 1px solid #DDE5DC;
+            border-radius: 14px;
+        }
+
+        h1 {
+            color: #1B4332;
+        }
+
+        .receiver {
+            background: #E8F5E9;
+            padding: 18px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 13px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        button,
+        .cancel {
+            margin-top: 20px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .cancel {
+            display: inline-block;
+            background: #E5E7EB;
+            color: #24352A;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <a href="{% url 'dashboard' %}" class="logo">
+            SkillSwap
+        </a>
+
+        <div>
+
+            <a href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'requests' %}">
+                Requests
+            </a>
+
+            <a href="{% url 'logout' %}" class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <div class="card">
+
+            <h1>Send Exchange Request</h1>
+
+            <div class="receiver">
+
+                <strong>
+                    {{ receiver.user.username }}
+                </strong>
+
+                <p>
+                    {{ receiver.user.first_name }}
+                    {{ receiver.user.last_name }}
+                </p>
+
+            </div>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <label>
+                    Message
+                </label>
+
+                <textarea
+                    name="message"
+                    placeholder="Write a message..."
+                ></textarea>
+
+
+                <button type="submit">
+                    Send Request
+                </button>
+
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="cancel"
+                >
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

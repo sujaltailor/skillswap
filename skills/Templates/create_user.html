@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Create User - SkillSwap</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: #1B4332;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 550px;
+            margin: 55px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border: 1px solid #DDE5DC;
+            border-radius: 14px;
+        }
+
+        h1 {
+            color: #1B4332;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #2E7D32;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #256628;
+        }
+
+        .error {
+            color: #B91C1C;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #2E7D32;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <div class="logo">
+            SkillSwap Admin
+        </div>
+
+        <div>
+            <a href="{% url 'admin_dashboard' %}">
+                Dashboard
+            </a>
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <div class="card">
+
+            <h1>
+                Create New User
+            </h1>
+
+
+            {% if error %}
+
+                <p class="error">
+                    {{ error }}
+                </p>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter username"
+                    required
+                >
+
+
+                <label>
+                    First Name
+                </label>
+
+                <input
+                    type="text"
+                    name="first_name"
+                    placeholder="Enter first name"
+                >
+
+
+                <label>
+                    Last Name
+                </label>
+
+                <input
+                    type="text"
+                    name="last_name"
+                    placeholder="Enter last name"
+                >
+
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Minimum 6 characters"
+                    required
+                >
+
+
+                <button type="submit">
+                    Create User
+                </button>
+
+            </form>
+
+
+            <a
+                href="{% url 'admin_dashboard' %}"
+                class="back"
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

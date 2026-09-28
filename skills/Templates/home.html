@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillSwap - Profile</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #F5F7F2;
+            color: #24352A;
+        }
+
+        nav {
+            background: #FFFFFF;
+            padding: 18px 6%;
+            border-bottom: 1px solid #DDE5DC;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #2E7D32;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #395443;
+            text-decoration: none;
+            margin-left: 22px;
+        }
+
+        .logout {
+            background: #2E7D32;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 8px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 850px;
+            margin: 45px auto;
+        }
+
+        .card {
+            background: #FFFFFF;
+            padding: 35px;
+            border: 1px solid #DDE5DC;
+            border-radius: 14px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #1B4332;
+        }
+
+        .subtitle {
+            color: #6B7280;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #B8C9B8;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .skills-box {
+            background: #F5F7F2;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #DDE5DC;
+        }
+
+        .skill {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .skill input {
+            margin-right: 8px;
+        }
+
+        button {
+            margin-top: 25px;
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #256628;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <a href="{% url 'dashboard' %}" class="logo">
+            SkillSwap
+        </a>
+
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'requests' %}">Requests</a>
+            <a href="{% url 'logout' %}" class="logout">Logout</a>
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <div class="card">
+
+            <h1>Create / Edit Your Profile</h1>
+
+            <p class="subtitle">
+                Add your information and choose the skills you want to exchange.
+            </p>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <label>Name</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ request.user.first_name }}"
+                    placeholder="Enter your name"
+                >
+
+
+                <label>Bio</label>
+
+                <textarea
+                    name="bio"
+                    placeholder="Tell something about yourself..."
+                >{{ profile.bio }}</textarea>
+
+
+                <label>Skills I Can Teach</label>
+
+                <div class="skills-box">
+
+                    {% for skill in skills %}
+
+                        <label class="skill">
+
+                            <input
+                                type="checkbox"
+                                name="teach_skills"
+                                value="{{ skill.id }}"
+                                {% if skill in profile.skills_to_teach.all %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            {{ skill.name }}
+
+                        </label>
+
+                    {% empty %}
+
+                        <p>No skills available.</p>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <label>Skills I Want to Learn</label>
+
+                <div class="skills-box">
+
+                    {% for skill in skills %}
+
+                        <label class="skill">
+
+                            <input
+                                type="checkbox"
+                                name="learn_skills"
+                                value="{{ skill.id }}"
+                                {% if skill in profile.skills_to_learn.all %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            {{ skill.name }}
+
+                        </label>
+
+                    {% empty %}
+
+                        <p>No skills available.</p>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <button type="submit">
+                    Save Profile
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>
