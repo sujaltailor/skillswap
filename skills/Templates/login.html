@@ -168,38 +168,9 @@
 
 
             <form method="POST">
-
                 {% csrf_token %}
-
-
-                <label>
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Enter username"
-                    required
-                >
-
-
-                <label>
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter password"
-                    required
-                >
-
-
-                <button type="submit">
-                    Login
-                </button>
-
+                {{ form.as_p }}
+                <button type="submit">Login</button>
             </form>
 
 

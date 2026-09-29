@@ -4,8 +4,17 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import logout
+from django.views.decorators.http import require_POST
 
 from .models import Skill, Profile, ExchangeRequest
+from .forms import (
+    AdminUserCreationForm,
+    AdminUserUpdateForm,
+    ExchangeRequestForm,
+    LoginForm,
+    ProfileForm,
+    RegistrationForm,
+)
 
 
 # =========================================================
@@ -14,126 +23,51 @@ from .models import Skill, Profile, ExchangeRequest
 
 @login_required(login_url="login")
 def home(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    form = ProfileForm(request.POST or None, instance=profile)
 
-    skills = Skill.objects.all()
-
-    profile, created = Profile.objects.get_or_create(
-        user=request.user
-    )
-
-    if request.method == "POST":
-
-        request.user.first_name = request.POST.get("name")
-        request.user.save()
-
-        profile.bio = request.POST.get("bio")
-
-        profile.skills_to_teach.set(
-            request.POST.getlist("teach_skills")
-        )
-
-        profile.skills_to_learn.set(
-            request.POST.getlist("learn_skills")
-        )
-
-        profile.save()
-
+    if request.method == "POST" and form.is_valid():
+        form.save()
         return redirect("dashboard")
 
-    return render(
-        request,
-        "home.html",
-        {
-            "skills": skills,
-            "profile": profile
-        }
-    )
-
+    return render(request, "home.html", {"form": form, "profile": profile})
 
 # =========================================================
 # USER REGISTER
 # =========================================================
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
 
-    if request.method == "POST":
-
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        if User.objects.filter(
-            username=username
-        ).exists():
-
-            return render(
-                request,
-                "register.html",
-                {
-                    "error":
-                    "Username already exists!"
-                }
-            )
-
-        user = User.objects.create_user(
-            username=username,
-            password=password
-        )
-
-        user.save()
-
+    form = RegistrationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        Profile.objects.create(user=user)
         return redirect("login")
 
-    return render(
-        request,
-        "register.html"
-    )
-
+    return render(request, "register.html", {"form": form})
 
 # =========================================================
 # USER LOGIN
 # =========================================================
 
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
 
-    if request.method == "POST":
+    form = LoginForm(request, data=request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        auth_login(request, form.get_user())
+        return redirect(request.GET.get("next") or "dashboard")
 
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
-
-        if user is not None:
-
-            auth_login(
-                request,
-                user
-            )
-
-            return redirect("dashboard")
-
-        return render(
-            request,
-            "login.html",
-            {
-                "error":
-                "Invalid username or password!"
-            }
-        )
-
-    return render(
-        request,
-        "login.html"
-    )
-
+    return render(request, "login.html", {"form": form})
 
 # =========================================================
 # USER LOGOUT
 # =========================================================
 
+@require_POST
 @login_required(login_url="login")
 def logout_user(request):
 
@@ -167,7 +101,7 @@ def dashboard(request):
 
         profiles = Profile.objects.filter(
             skills_to_teach__name__icontains=query
-        ).select_related(
+        ).exclude(user=request.user).select_related(
             "user"
         ).distinct()
 
@@ -200,7 +134,7 @@ def find_skills(request):
 
         profiles = Profile.objects.filter(
             skills_to_teach__name__icontains=query
-        ).select_related(
+        ).exclude(user=request.user).select_related(
             "user"
         ).distinct()
 
@@ -220,56 +154,34 @@ def find_skills(request):
 
 @login_required(login_url="login")
 def send_request(request, profile_id):
+    receiver = get_object_or_404(Profile, id=profile_id)
+    sender = get_object_or_404(Profile, user=request.user)
 
-    receiver = get_object_or_404(
-        Profile,
-        id=profile_id
-    )
-
-    sender = get_object_or_404(
-        Profile,
-        user=request.user
-    )
-
-    # User cannot send request to himself
     if sender == receiver:
-
         return redirect("dashboard")
 
-    # Check pending request already exists
-    existing_request = ExchangeRequest.objects.filter(
+    if ExchangeRequest.objects.filter(
         sender=sender,
         receiver=receiver,
-        status="Pending"
-    ).exists()
-
-    if existing_request:
-
+        status=ExchangeRequest.Status.PENDING,
+    ).exists():
         return redirect("dashboard")
 
-    if request.method == "POST":
-
-        message = request.POST.get(
-            "message",
-            ""
-        )
-
-        ExchangeRequest.objects.create(
+    form = ExchangeRequestForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        ExchangeRequest.objects.get_or_create(
             sender=sender,
             receiver=receiver,
-            message=message
+            status=ExchangeRequest.Status.PENDING,
+            defaults={"message": form.cleaned_data["message"]},
         )
-
         return redirect("requests")
 
     return render(
         request,
         "send_request.html",
-        {
-            "receiver": receiver
-        }
+        {"receiver": receiver, "form": form},
     )
-
 
 # =========================================================
 # REQUESTS PAGE
@@ -315,6 +227,7 @@ def requests_page(request):
 # ACCEPT REQUEST
 # =========================================================
 
+@require_POST
 @login_required(login_url="login")
 def accept_request(request, request_id):
 
@@ -328,7 +241,7 @@ def accept_request(request, request_id):
 
         return redirect("requests")
 
-    exchange_request.status = "Accepted"
+    exchange_request.status = ExchangeRequest.Status.ACCEPTED
 
     exchange_request.save()
 
@@ -339,6 +252,7 @@ def accept_request(request, request_id):
 # REJECT REQUEST
 # =========================================================
 
+@require_POST
 @login_required(login_url="login")
 def reject_request(request, request_id):
 
@@ -352,7 +266,7 @@ def reject_request(request, request_id):
 
         return redirect("requests")
 
-    exchange_request.status = "Rejected"
+    exchange_request.status = ExchangeRequest.Status.REJECTED
 
     exchange_request.save()
 
@@ -450,87 +364,21 @@ def admin_dashboard(request):
 # ADMIN CREATE USER
 # =========================================================
 
-@user_passes_test(
-    is_admin,
-    login_url="login"
-)
+@user_passes_test(is_admin, login_url="login")
 def create_user(request):
+    form = AdminUserCreationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        Profile.objects.get_or_create(user=user)
+        return redirect("admin_dashboard")
 
-    if request.method == "POST":
-
-        username = request.POST.get(
-            "username",
-            ""
-        ).strip()
-
-        first_name = request.POST.get(
-            "first_name",
-            ""
-        ).strip()
-
-        last_name = request.POST.get(
-            "last_name",
-            ""
-        ).strip()
-
-        password = request.POST.get(
-            "password",
-            ""
-        )
-
-        # Username already exists
-        if User.objects.filter(
-            username=username
-        ).exists():
-
-            return render(
-                request,
-                "create_user.html",
-                {
-                    "error":
-                    "Username already exists!"
-                }
-            )
-
-        # Password validation
-        if len(password) < 6:
-
-            return render(
-                request,
-                "create_user.html",
-                {
-                    "error":
-                    "Password must be at least 6 characters!"
-                }
-            )
-
-        # Create user
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-        )
-
-        # Create profile
-        Profile.objects.get_or_create(
-            user=user
-        )
-
-        return redirect(
-            "admin_dashboard"
-        )
-
-    return render(
-        request,
-        "create_user.html"
-    )
-
+    return render(request, "create_user.html", {"form": form})
 
 # =========================================================
 # ADMIN DELETE USER
 # =========================================================
 
+@require_POST
 @user_passes_test(
     is_admin,
     login_url="login"
@@ -559,92 +407,15 @@ def delete_user(request, user_id):
 # ADMIN EDIT USER
 # =========================================================
 
-@user_passes_test(
-    is_admin,
-    login_url="login"
-)
+@user_passes_test(is_admin, login_url="login")
 def edit_user(request, user_id):
-
-    user = get_object_or_404(
-        User,
-        id=user_id
-    )
-
-    # Admin / superuser ko edit nahi karna
+    user = get_object_or_404(User, id=user_id)
     if user.is_staff or user.is_superuser:
         return redirect("admin_dashboard")
 
-    if request.method == "POST":
+    form = AdminUserUpdateForm(request.POST or None, instance=user)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect("admin_dashboard")
 
-        username = request.POST.get(
-            "username",
-            ""
-        ).strip()
-
-        first_name = request.POST.get(
-            "first_name",
-            ""
-        ).strip()
-
-        last_name = request.POST.get(
-            "last_name",
-            ""
-        ).strip()
-
-        password = request.POST.get(
-            "password",
-            ""
-        )
-
-        # Check username already exists
-        if User.objects.filter(
-            username=username
-        ).exclude(
-            id=user.id
-        ).exists():
-
-            return render(
-                request,
-                "edit_user.html",
-                {
-                    "user": user,
-                    "error":
-                    "Username already exists!"
-                }
-            )
-
-        # Update user information
-        user.username = username
-        user.first_name = first_name
-        user.last_name = last_name
-
-        # Password only update if entered
-        if password:
-
-            if len(password) < 6:
-
-                return render(
-                    request,
-                    "edit_user.html",
-                    {
-                        "user": user,
-                        "error":
-                        "Password must be at least 6 characters!"
-                    }
-                )
-
-            user.set_password(password)
-
-        user.save()
-
-        return redirect(
-            "admin_dashboard"
-        )
-
-    return render(
-        request,
-        "edit_user.html",
-        {
-            "user": user
-        }
-    )
+    return render(request, "edit_user.html", {"form": form, "user": user})

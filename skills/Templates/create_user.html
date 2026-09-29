@@ -137,60 +137,9 @@
 
 
             <form method="POST">
-
                 {% csrf_token %}
-
-
-                <label>
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Enter username"
-                    required
-                >
-
-
-                <label>
-                    First Name
-                </label>
-
-                <input
-                    type="text"
-                    name="first_name"
-                    placeholder="Enter first name"
-                >
-
-
-                <label>
-                    Last Name
-                </label>
-
-                <input
-                    type="text"
-                    name="last_name"
-                    placeholder="Enter last name"
-                >
-
-
-                <label>
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Minimum 6 characters"
-                    required
-                >
-
-
-                <button type="submit">
-                    Create User
-                </button>
-
+                {{ form.as_p }}
+                <button type="submit">Create User</button>
             </form>
 
 

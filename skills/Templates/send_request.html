@@ -130,9 +130,7 @@
                 Requests
             </a>
 
-            <a href="{% url 'logout' %}" class="logout">
-                Logout
-            </a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button type="submit" class="logout">Logout</button></form>
 
         </div>
 
@@ -160,30 +158,10 @@
 
 
             <form method="POST">
-
                 {% csrf_token %}
-
-                <label>
-                    Message
-                </label>
-
-                <textarea
-                    name="message"
-                    placeholder="Write a message..."
-                ></textarea>
-
-
-                <button type="submit">
-                    Send Request
-                </button>
-
-                <a
-                    href="{% url 'dashboard' %}"
-                    class="cancel"
-                >
-                    Cancel
-                </a>
-
+                {{ form.as_p }}
+                <button type="submit">Send Request</button>
+                <a href="{% url 'dashboard' %}" class="cancel">Cancel</a>
             </form>
 
         </div>

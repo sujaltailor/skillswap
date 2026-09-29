@@ -121,9 +121,7 @@
                 Requests
             </a>
 
-            <a href="{% url 'logout' %}" class="logout">
-                Logout
-            </a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button type="submit" class="logout">Logout</button></form>
 
         </div>
 

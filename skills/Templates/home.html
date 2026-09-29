@@ -136,7 +136,7 @@
         <div>
             <a href="{% url 'dashboard' %}">Dashboard</a>
             <a href="{% url 'requests' %}">Requests</a>
-            <a href="{% url 'logout' %}" class="logout">Logout</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button type="submit" class="logout">Logout</button></form>
         </div>
 
     </nav>
@@ -154,92 +154,9 @@
 
 
             <form method="POST">
-
                 {% csrf_token %}
-
-
-                <label>Name</label>
-
-                <input
-                    type="text"
-                    name="name"
-                    value="{{ request.user.first_name }}"
-                    placeholder="Enter your name"
-                >
-
-
-                <label>Bio</label>
-
-                <textarea
-                    name="bio"
-                    placeholder="Tell something about yourself..."
-                >{{ profile.bio }}</textarea>
-
-
-                <label>Skills I Can Teach</label>
-
-                <div class="skills-box">
-
-                    {% for skill in skills %}
-
-                        <label class="skill">
-
-                            <input
-                                type="checkbox"
-                                name="teach_skills"
-                                value="{{ skill.id }}"
-                                {% if skill in profile.skills_to_teach.all %}
-                                    checked
-                                {% endif %}
-                            >
-
-                            {{ skill.name }}
-
-                        </label>
-
-                    {% empty %}
-
-                        <p>No skills available.</p>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <label>Skills I Want to Learn</label>
-
-                <div class="skills-box">
-
-                    {% for skill in skills %}
-
-                        <label class="skill">
-
-                            <input
-                                type="checkbox"
-                                name="learn_skills"
-                                value="{{ skill.id }}"
-                                {% if skill in profile.skills_to_learn.all %}
-                                    checked
-                                {% endif %}
-                            >
-
-                            {{ skill.name }}
-
-                        </label>
-
-                    {% empty %}
-
-                        <p>No skills available.</p>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <button type="submit">
-                    Save Profile
-                </button>
-
+                {{ form.as_p }}
+                <button type="submit">Save Profile</button>
             </form>
 
         </div>

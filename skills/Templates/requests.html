@@ -131,9 +131,7 @@
                 Requests
             </a>
 
-            <a href="{% url 'logout' %}">
-                Logout
-            </a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button type="submit">Logout</button></form>
 
         </div>
 
@@ -167,7 +165,7 @@
                     </p>
 
                     <span class="status">
-                        {{ req.status }}
+                        {{ req.get_status_display }}
                     </span>
 
 
@@ -175,19 +173,9 @@
 
                         <br>
 
-                        <a
-                            href="{% url 'accept_request' req.id %}"
-                            class="accept"
-                        >
-                            Accept
-                        </a>
+                        <form method="post" action="{% url 'accept_request' req.id %}" style="display:inline">{% csrf_token %}<button type="submit" class="accept">Accept</button></form>
 
-                        <a
-                            href="{% url 'reject_request' req.id %}"
-                            class="reject"
-                        >
-                            Reject
-                        </a>
+                        <form method="post" action="{% url 'reject_request' req.id %}" style="display:inline">{% csrf_token %}<button type="submit" class="reject">Reject</button></form>
 
                     {% endif %}
 
@@ -226,7 +214,7 @@
                     </p>
 
                     <span class="status">
-                        {{ req.status }}
+                        {{ req.get_status_display }}
                     </span>
 
                 </div>
