@@ -113,6 +113,10 @@ if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600),
     }
+elif RENDER_EXTERNAL_HOSTNAME:
+    raise RuntimeError(
+        "DATABASE_URL must be configured on Render; refusing to use ephemeral SQLite."
+    )
 else:
     DATABASES = {
         'default': {
