@@ -27,7 +27,6 @@
             border-bottom: 1px solid #DDE5DC;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
         .logo {
@@ -181,8 +180,13 @@
                 Find Skills
             </a>
 
-            <a href="{% url 'requests' %}">
+            <a href="{% url 'requests' %}" >
                 Requests
+                {% if request_count > 4 %}
+                    4+
+                {% elif request_count > 0 %}
+                    {{ request_count }}
+                {% endif %}
             </a>
 
             <a href="{% url 'logout' %}" class="logout">

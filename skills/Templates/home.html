@@ -165,7 +165,9 @@
                     name="name"
                     value="{{ request.user.first_name }}"
                     placeholder="Enter your name"
-                >
+                    required
+                    >
+
 
 
                 <label>Bio</label>
@@ -173,6 +175,7 @@
                 <textarea
                     name="bio"
                     placeholder="Tell something about yourself..."
+                    required
                 >{{ profile.bio }}</textarea>
 
 

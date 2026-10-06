@@ -156,6 +156,11 @@ def dashboard(request):
     if not profile:
         return redirect("home")
 
+    request_count = ExchangeRequest.objects.filter(
+        receiver=profile,
+        status="Pending"
+    ).count()
+
     query = request.GET.get(
         "q",
         ""
@@ -167,6 +172,8 @@ def dashboard(request):
 
         profiles = Profile.objects.filter(
             skills_to_teach__name__icontains=query
+        ).exclude(
+            user=request.user
         ).select_related(
             "user"
         ).distinct()
@@ -177,7 +184,8 @@ def dashboard(request):
         {
             "profile": profile,
             "query": query,
-            "profiles": profiles
+            "profiles": profiles,
+            "request_count": request_count
         }
     )
 
@@ -200,6 +208,8 @@ def find_skills(request):
 
         profiles = Profile.objects.filter(
             skills_to_teach__name__icontains=query
+        ).exclude(
+            user=request.user
         ).select_related(
             "user"
         ).distinct()
